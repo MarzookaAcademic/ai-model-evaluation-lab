@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Model Evaluation Lab</title>
+</head>
+
+<body>
+
+    <h1>🤖 AI Model Evaluation Lab</h1>
+
+    <h2>Confusion Matrix</h2>
+
+    <p>Enter the values below:</p>
+
+    <label>True Positive (TP):</label>
+    <input type="number" id="tp" value="80">
+
+    <br><br>
+
+    <label>True Negative (TN):</label>
+    <input type="number" id="tn" value="90">
+
+    <br><br>
+
+    <label>False Positive (FP):</label>
+    <input type="number" id="fp" value="10">
+
+    <br><br>
+
+    <label>False Negative (FN):</label>
+    <input type="number" id="fn" value="20">
+
+    <br><br>
+
+    <button onclick="calculateMetrics()">Calculate</button>
+
+    <h2>Results</h2>
+
+    <p>Accuracy: <span id="accuracy">-</span></p>
+    <p>Precision: <span id="precision">-</span></p>
+    <p>Recall: <span id="recall">-</span></p>
+    <p>F1 Score: <span id="f1">-</span></p>
+
+    <script>
+
+        function calculateMetrics() {
+
+            let TP = Number(document.getElementById("tp").value);
+            let TN = Number(document.getElementById("tn").value);
+            let FP = Number(document.getElementById("fp").value);
+            let FN = Number(document.getElementById("fn").value);
+
+            let accuracy = (TP + TN) / (TP + TN + FP + FN);
+
+            let precision = TP / (TP + FP);
+
+            let recall = TP / (TP + FN);
+
+            let f1 = 2 * (precision * recall) / (precision + recall);
+
+            document.getElementById("accuracy").innerText =
+                (accuracy * 100).toFixed(2) + "%";
+
+            document.getElementById("precision").innerText =
+                (precision * 100).toFixed(2) + "%";
+
+            document.getElementById("recall").innerText =
+                (recall * 100).toFixed(2) + "%";
+
+            document.getElementById("f1").innerText =
+                (f1 * 100).toFixed(2) + "%";
+        }
+
+    </script>
+
+</body>
+</html>
