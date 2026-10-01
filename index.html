@@ -413,22 +413,33 @@
 
     <div class="section question">
 
-        <h2>🕵️ AI Detective Challenge</h2>
+    <h2>🕵️ AI Detective Challenge</h2>
+
+    <p>
+        An AI system is trained to detect spam emails.
+    </p>
+
+    <div class="explanation">
+
+        <p><strong>📧 Scenario 1</strong></p>
 
         <p>
-            An AI model examined <strong>200 cases</strong>.
+            The email is <strong>actually SPAM</strong>.
+            The AI predicts <strong>SPAM</strong>.
         </p>
 
-        <p>
-            Change the TP, TN, FP and FN values above and observe
-            how the model's performance changes.
-        </p>
+        <p>What is this prediction?</p>
 
-        <p>
-            💡 Try increasing the False Positives. What happens to Precision?
-        </p>
+        <button onclick="checkAnswer('TP')">TP</button>
+        <button onclick="checkAnswer('TN')">TN</button>
+        <button onclick="checkAnswer('FP')">FP</button>
+        <button onclick="checkAnswer('FN')">FN</button>
+
+        <p id="quizResult"></p>
 
     </div>
+
+</div>
 
 
     <footer>
@@ -488,7 +499,25 @@ function calculateMetrics() {
 
 // Calculate the default values when the page opens
 calculateMetrics();
+function checkAnswer(answer) {
 
+    const result = document.getElementById("quizResult");
+
+    if (answer === "TP") {
+
+        result.innerHTML =
+            "✅ Correct! This is <strong>True Positive (TP)</strong> because the email was actually spam and the AI correctly predicted spam.";
+
+        result.style.color = "green";
+
+    } else {
+
+        result.innerHTML =
+            "❌ Not quite. Think about the actual result and the AI prediction again.";
+
+        result.style.color = "red";
+    }
+}
 </script>
 
 </body>
