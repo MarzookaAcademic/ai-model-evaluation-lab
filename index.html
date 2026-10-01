@@ -3,77 +3,484 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>AI Model Evaluation Lab</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 30px 20px;
+        }
+
+        header {
+            text-align: center;
+            background: white;
+            padding: 30px 20px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        header h1 {
+            margin: 0 0 10px;
+            font-size: 32px;
+        }
+
+        header p {
+            margin: 0;
+            color: #64748b;
+            font-size: 17px;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        .section h2 {
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .matrix {
+            display: grid;
+            grid-template-columns: 140px 1fr 1fr;
+            max-width: 650px;
+            margin: 25px auto;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .matrix div {
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #cbd5e1;
+        }
+
+        .matrix .heading {
+            font-weight: bold;
+            background: #eef2ff;
+        }
+
+        .matrix .tp {
+            background: #ecfdf5;
+        }
+
+        .matrix .tn {
+            background: #eff6ff;
+        }
+
+        .matrix .fp {
+            background: #fff7ed;
+        }
+
+        .matrix .fn {
+            background: #fef2f2;
+        }
+
+        .matrix strong {
+            display: block;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .inputs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .input-box {
+            text-align: center;
+        }
+
+        .input-box label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .input-box input {
+            width: 100%;
+            padding: 12px;
+            font-size: 17px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .calculate {
+            display: block;
+            margin: 25px auto 5px;
+            padding: 14px 30px;
+            font-size: 17px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            background: #4f46e5;
+            color: white;
+            cursor: pointer;
+        }
+
+        .calculate:hover {
+            background: #4338ca;
+        }
+
+        .results {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .result-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+        }
+
+        .result-card h3 {
+            margin: 0 0 10px;
+            font-size: 18px;
+        }
+
+        .result-card .value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .explanations {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .explanation {
+            padding: 20px;
+            border-left: 5px solid #4f46e5;
+            background: #f8fafc;
+            border-radius: 10px;
+        }
+
+        .explanation h3 {
+            margin-top: 0;
+        }
+
+        .question {
+            text-align: center;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        footer {
+            text-align: center;
+            color: #64748b;
+            padding: 15px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 700px) {
+
+            .inputs {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .results {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .explanations {
+                grid-template-columns: 1fr;
+            }
+
+            .matrix {
+                grid-template-columns: 100px 1fr 1fr;
+            }
+
+            .matrix div {
+                padding: 12px 5px;
+                font-size: 14px;
+            }
+
+            header h1 {
+                font-size: 25px;
+            }
+        }
+
+        @media (max-width: 450px) {
+
+            .inputs {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .results {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .container {
+                padding: 15px 10px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-    <h1>🤖 AI Model Evaluation Lab</h1>
+<div class="container">
 
-    <h2>Confusion Matrix</h2>
+    <header>
+        <h1>🤖 AI Model Evaluation Lab</h1>
+        <p>Explore how we evaluate the performance of an AI classification model.</p>
+    </header>
 
-    <p>Enter the values below:</p>
 
-    <label>True Positive (TP):</label>
-    <input type="number" id="tp" value="80">
+    <div class="section">
 
-    <br><br>
+        <h2>📊 Confusion Matrix</h2>
 
-    <label>True Negative (TN):</label>
-    <input type="number" id="tn" value="90">
+        <div class="matrix">
 
-    <br><br>
+            <div class="heading"></div>
+            <div class="heading">Actual Positive</div>
+            <div class="heading">Actual Negative</div>
 
-    <label>False Positive (FP):</label>
-    <input type="number" id="fp" value="10">
+            <div class="heading">Predicted Positive</div>
+            <div class="tp">
+                <strong>TP</strong>
+                True Positive
+            </div>
+            <div class="fp">
+                <strong>FP</strong>
+                False Positive
+            </div>
 
-    <br><br>
+            <div class="heading">Predicted Negative</div>
+            <div class="fn">
+                <strong>FN</strong>
+                False Negative
+            </div>
+            <div class="tn">
+                <strong>TN</strong>
+                True Negative
+            </div>
 
-    <label>False Negative (FN):</label>
-    <input type="number" id="fn" value="20">
+        </div>
 
-    <br><br>
+    </div>
 
-    <button onclick="calculateMetrics()">Calculate</button>
 
-    <h2>Results</h2>
+    <div class="section">
 
-    <p>Accuracy: <span id="accuracy">-</span></p>
-    <p>Precision: <span id="precision">-</span></p>
-    <p>Recall: <span id="recall">-</span></p>
-    <p>F1 Score: <span id="f1">-</span></p>
+        <h2>🔢 Enter Model Results</h2>
 
-    <script>
+        <div class="inputs">
 
-        function calculateMetrics() {
+            <div class="input-box">
+                <label>True Positive</label>
+                <input type="number" id="tp" value="80" min="0">
+            </div>
 
-            let TP = Number(document.getElementById("tp").value);
-            let TN = Number(document.getElementById("tn").value);
-            let FP = Number(document.getElementById("fp").value);
-            let FN = Number(document.getElementById("fn").value);
+            <div class="input-box">
+                <label>True Negative</label>
+                <input type="number" id="tn" value="90" min="0">
+            </div>
 
-            let accuracy = (TP + TN) / (TP + TN + FP + FN);
+            <div class="input-box">
+                <label>False Positive</label>
+                <input type="number" id="fp" value="10" min="0">
+            </div>
 
-            let precision = TP / (TP + FP);
+            <div class="input-box">
+                <label>False Negative</label>
+                <input type="number" id="fn" value="20" min="0">
+            </div>
 
-            let recall = TP / (TP + FN);
+        </div>
 
-            let f1 = 2 * (precision * recall) / (precision + recall);
+        <button class="calculate" onclick="calculateMetrics()">
+            Calculate Metrics
+        </button>
 
-            document.getElementById("accuracy").innerText =
-                (accuracy * 100).toFixed(2) + "%";
+    </div>
 
-            document.getElementById("precision").innerText =
-                (precision * 100).toFixed(2) + "%";
 
-            document.getElementById("recall").innerText =
-                (recall * 100).toFixed(2) + "%";
+    <div class="section">
 
-            document.getElementById("f1").innerText =
-                (f1 * 100).toFixed(2) + "%";
-        }
+        <h2>🎯 Model Performance</h2>
 
-    </script>
+        <div class="results">
+
+            <div class="result-card">
+                <h3>Accuracy</h3>
+                <div class="value" id="accuracy">-</div>
+            </div>
+
+            <div class="result-card">
+                <h3>Precision</h3>
+                <div class="value" id="precision">-</div>
+            </div>
+
+            <div class="result-card">
+                <h3>Recall</h3>
+                <div class="value" id="recall">-</div>
+            </div>
+
+            <div class="result-card">
+                <h3>F1 Score</h3>
+                <div class="value" id="f1">-</div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="section">
+
+        <h2>🧠 Understand the Metrics</h2>
+
+        <div class="explanations">
+
+            <div class="explanation">
+                <h3>🎯 Accuracy</h3>
+                <p>
+                    <strong>“How often is the AI correct overall?”</strong>
+                </p>
+                <p>
+                    Accuracy measures the proportion of all predictions
+                    that the model classified correctly.
+                </p>
+            </div>
+
+            <div class="explanation">
+                <h3>🎯 Precision</h3>
+                <p>
+                    <strong>“When AI says POSITIVE, how often is it right?”</strong>
+                </p>
+                <p>
+                    Precision tells us how many of the cases predicted
+                    as positive were actually positive.
+                </p>
+            </div>
+
+            <div class="explanation">
+                <h3>🔍 Recall</h3>
+                <p>
+                    <strong>“Of all ACTUAL POSITIVE cases, how many did AI find?”</strong>
+                </p>
+                <p>
+                    Recall measures how many of the actual positive cases
+                    were correctly detected by the model.
+                </p>
+            </div>
+
+            <div class="explanation">
+                <h3>⚖️ F1 Score</h3>
+                <p>
+                    <strong>“How well does the model balance Precision and Recall?”</strong>
+                </p>
+                <p>
+                    F1 Score combines Precision and Recall into a single
+                    measure of model performance.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="section question">
+
+        <h2>🕵️ AI Detective Challenge</h2>
+
+        <p>
+            An AI model examined <strong>200 cases</strong>.
+        </p>
+
+        <p>
+            Change the TP, TN, FP and FN values above and observe
+            how the model's performance changes.
+        </p>
+
+        <p>
+            💡 Try increasing the False Positives. What happens to Precision?
+        </p>
+
+    </div>
+
+
+    <footer>
+        AI Model Evaluation Lab | Educational Project by Marzooka Academic
+    </footer>
+
+</div>
+
+
+<script>
+
+function calculateMetrics() {
+
+    const TP = Number(document.getElementById("tp").value);
+    const TN = Number(document.getElementById("tn").value);
+    const FP = Number(document.getElementById("fp").value);
+    const FN = Number(document.getElementById("fn").value);
+
+    const total = TP + TN + FP + FN;
+
+    if (total === 0) {
+        alert("Please enter at least one value.");
+        return;
+    }
+
+    const accuracy = (TP + TN) / total;
+
+    const precision =
+        (TP + FP) === 0 ? 0 : TP / (TP + FP);
+
+    const recall =
+        (TP + FN) === 0 ? 0 : TP / (TP + FN);
+
+    const f1 =
+        (precision + recall) === 0
+        ? 0
+        : 2 * (precision * recall) / (precision + recall);
+
+    document.getElementById("accuracy").textContent =
+        (accuracy * 100).toFixed(2) + "%";
+
+    document.getElementById("precision").textContent =
+        (precision * 100).toFixed(2) + "%";
+
+    document.getElementById("recall").textContent =
+        (recall * 100).toFixed(2) + "%";
+
+    document.getElementById("f1").textContent =
+        (f1 * 100).toFixed(2) + "%";
+}
+
+
+// Calculate the default values when the page opens
+calculateMetrics();
+
+</script>
 
 </body>
 </html>
