@@ -263,22 +263,26 @@
 
             <div class="heading">Predicted Positive</div>
             <div class="tp">
-                <strong>TP</strong>
-                True Positive
-            </div>
-            <div class="fp">
-                <strong>FP</strong>
-                False Positive
-            </div>
+    <strong>TP</strong>
+    <span id="matrixTP">80</span>
+    <small>True Positive</small>
+    </div>
+    <div class="fp">
+    <strong>FP</strong>
+    <span id="matrixFP">10</span>
+    <small>False Positive</small>
+    </div>
 
             <div class="heading">Predicted Negative</div>
-            <div class="fn">
-                <strong>FN</strong>
-                False Negative
-            </div>
+        <div class="fn">
+            <strong>FN</strong>
+            <span id="matrixFN">20</span>
+            <small>False Negative</small>
+        </div>
             <div class="tn">
-                <strong>TN</strong>
-                True Negative
+    <strong>TN</strong>
+    <span id="matrixTN">90</span>
+    <small>True Negative</small>
             </div>
 
         </div>
@@ -463,6 +467,11 @@ function calculateMetrics() {
         ? 0
         : 2 * (precision * recall) / (precision + recall);
 
+    document.getElementById("matrixTP").textContent = TP;
+    document.getElementById("matrixTN").textContent = TN;
+    document.getElementById("matrixFP").textContent = FP;
+    document.getElementById("matrixFN").textContent = FN;
+    
     document.getElementById("accuracy").textContent =
         (accuracy * 100).toFixed(2) + "%";
 
