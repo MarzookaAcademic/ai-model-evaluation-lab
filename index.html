@@ -1,524 +1,875 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#4338ca">
+<title>AI Model Evaluation Lab | Marzooka Academic</title>
 
-    <title>AI Model Evaluation Lab</title>
+<style>
+:root {
+    --primary: #4338ca;
+    --primary-light: #eef2ff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #dbe3ef;
+    --green: #dcfce7;
+    --orange: #ffedd5;
+    --red: #fee2e2;
+    --blue: #dbeafe;
+}
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+* { box-sizing: border-box; }
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f7fb;
-            color: #1f2937;
-        }
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f3f6fc;
+    color: var(--text);
+    line-height: 1.6;
+}
 
-        .container {
-            max-width: 1000px;
-            margin: auto;
-            padding: 30px 20px;
-        }
+button, input { font: inherit; }
 
-        header {
-            text-align: center;
-            background: white;
-            padding: 30px 20px;
-            border-radius: 18px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        }
+button {
+    cursor: pointer;
+    border: 0;
+    border-radius: 9px;
+    padding: 11px 17px;
+    font-weight: 700;
+    transition: background .2s, transform .2s;
+}
 
-        header h1 {
-            margin: 0 0 10px;
-            font-size: 32px;
-        }
+button:focus-visible, input:focus-visible {
+    outline: 3px solid #a5b4fc;
+    outline-offset: 2px;
+}
 
-        header p {
-            margin: 0;
-            color: #64748b;
-            font-size: 17px;
-        }
+button:disabled {
+    cursor: not-allowed;
+    opacity: .55;
+}
 
-        .section {
-            background: white;
-            padding: 25px;
-            border-radius: 18px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-        }
+.container {
+    max-width: 1050px;
+    margin: auto;
+    padding: 24px 18px;
+}
 
-        .section h2 {
-            text-align: center;
-            margin-top: 0;
-        }
+.hero {
+    background: linear-gradient(135deg, #ffffff, #eef2ff);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    text-align: center;
+    padding: 35px 20px;
+    margin-bottom: 22px;
+}
 
-        .matrix {
-            display: grid;
-            grid-template-columns: 140px 1fr 1fr;
-            max-width: 650px;
-            margin: 25px auto;
-            border: 2px solid #cbd5e1;
-            border-radius: 12px;
-            overflow: hidden;
-        }
+.hero h1 {
+    font-size: clamp(26px, 4vw, 38px);
+    line-height: 1.2;
+    margin: 0 0 12px;
+}
 
-        .matrix div {
-            padding: 20px;
-            text-align: center;
-            border: 1px solid #cbd5e1;
-        }
+.hero p {
+    margin: 0;
+    color: var(--muted);
+}
 
-        .matrix .heading {
-            font-weight: bold;
-            background: #eef2ff;
-        }
+.tag {
+    display: inline-block;
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 5px 12px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
 
-        .matrix .tp {
-            background: #ecfdf5;
-        }
+.section {
+    background: white;
+    padding: 25px;
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    margin-bottom: 22px;
+    box-shadow: 0 4px 14px rgba(30, 41, 59, .04);
+}
 
-        .matrix .tn {
-            background: #eff6ff;
-        }
+.section h2 {
+    text-align: center;
+    font-size: 23px;
+    margin: 0 0 10px;
+}
 
-        .matrix .fp {
-            background: #fff7ed;
-        }
+.subtitle {
+    text-align: center;
+    color: var(--muted);
+    margin: 0 auto 22px;
+}
 
-        .matrix .fn {
-            background: #fef2f2;
-        }
+.matrix-wrap {
+    overflow-x: auto;
+    max-width: 720px;
+    margin: 22px auto 0;
+}
 
-        .matrix strong {
-            display: block;
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
+.matrix {
+    width: 100%;
+    min-width: 460px;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    overflow: hidden;
+    text-align: center;
+}
 
-        .inputs {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-        }
+.matrix th, .matrix td {
+    border-right: 1px solid #cbd5e1;
+    border-bottom: 1px solid #cbd5e1;
+    padding: 15px 10px;
+}
 
-        .input-box {
-            text-align: center;
-        }
+.matrix tr:last-child td { border-bottom: 0; }
+.matrix tr th:last-child,
+.matrix tr td:last-child { border-right: 0; }
 
-        .input-box label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
+.matrix th {
+    background: var(--primary-light);
+    font-size: 14px;
+}
 
-        .input-box input {
-            width: 100%;
-            padding: 12px;
-            font-size: 17px;
-            border: 2px solid #cbd5e1;
-            border-radius: 8px;
-            text-align: center;
-        }
+.matrix .row-head {
+    background: #f1f5f9;
+    min-width: 125px;
+}
 
-        .calculate {
-            display: block;
-            margin: 25px auto 5px;
-            padding: 14px 30px;
-            font-size: 17px;
-            font-weight: bold;
-            border: none;
-            border-radius: 10px;
-            background: #4f46e5;
-            color: white;
-            cursor: pointer;
-        }
+.matrix td strong {
+    display: block;
+    font-size: 22px;
+}
 
-        .calculate:hover {
-            background: #4338ca;
-        }
+.matrix td small {
+    display: block;
+    margin-top: 4px;
+}
 
-        .results {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-        }
+.tp-cell { background: var(--green); }
+.fp-cell { background: var(--orange); }
+.fn-cell { background: var(--red); }
+.tn-cell { background: var(--blue); }
 
-        .result-card {
-            text-align: center;
-            padding: 20px;
-            border-radius: 12px;
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-        }
+.input-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 22px;
+}
 
-        .result-card h3 {
-            margin: 0 0 10px;
-            font-size: 18px;
-        }
+.input-box {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+}
 
-        .result-card .value {
-            font-size: 28px;
-            font-weight: bold;
-        }
+.input-box label {
+    display: block;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
 
-        .explanations {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
-        }
+.input-box small {
+    display: block;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
 
-        .explanation {
-            padding: 20px;
-            border-left: 5px solid #4f46e5;
-            background: #f8fafc;
-            border-radius: 10px;
-        }
+.input-box input {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    text-align: center;
+    background: white;
+}
 
-        .explanation h3 {
-            margin-top: 0;
-        }
+.primary-btn {
+    display: block;
+    margin: 20px auto 0;
+    background: var(--primary);
+    color: white;
+}
 
-        .question {
-            text-align: center;
-            font-size: 18px;
-            line-height: 1.6;
-        }
+.primary-btn:hover { background: #3730a3; }
 
-        footer {
-            text-align: center;
-            color: #64748b;
-            padding: 15px;
-            font-size: 14px;
-        }
+.message {
+    text-align: center;
+    color: #b91c1c;
+    font-weight: bold;
+    min-height: 1.5em;
+}
 
-        @media (max-width: 700px) {
+.results {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 20px;
+}
 
-            .inputs {
-                grid-template-columns: repeat(2, 1fr);
-            }
+.result-card {
+    text-align: center;
+    border: 1px solid var(--border);
+    background: #f8fafc;
+    border-radius: 13px;
+    padding: 18px 8px;
+}
 
-            .results {
-                grid-template-columns: repeat(2, 1fr);
-            }
+.result-card h3 {
+    font-size: 15px;
+    margin: 0 0 8px;
+}
 
-            .explanations {
-                grid-template-columns: 1fr;
-            }
+.metric-value {
+    color: var(--primary);
+    font-size: clamp(20px, 3vw, 28px);
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
 
-            .matrix {
-                grid-template-columns: 100px 1fr 1fr;
-            }
+.metric-label {
+    font-size: 12px;
+    color: var(--muted);
+}
 
-            .matrix div {
-                padding: 12px 5px;
-                font-size: 14px;
-            }
+.explanations {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
 
-            header h1 {
-                font-size: 25px;
-            }
-        }
+.explanation {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--primary);
+    border-radius: 10px;
+    padding: 17px;
+}
 
-        @media (max-width: 450px) {
+.explanation h3 { margin: 0 0 8px; }
+.explanation p { margin: 7px 0; }
+.formula { color: var(--muted); font-size: 13px; }
 
-            .inputs {
-                grid-template-columns: 1fr 1fr;
-            }
+.tip {
+    margin-top: 18px;
+    padding: 15px;
+    border-radius: 10px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+}
 
-            .results {
-                grid-template-columns: 1fr 1fr;
-            }
+.quiz-panel {
+    max-width: 720px;
+    margin: 20px auto 0;
+    padding: 22px;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+}
 
-            .container {
-                padding: 15px 10px;
-            }
-        }
-    </style>
+.quiz-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.pill {
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 5px 11px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.progress-track {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 22px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 20%;
+    background: var(--primary);
+    transition: width .2s;
+}
+
+#scenarioTitle { margin-bottom: 8px; }
+
+.scenario {
+    font-size: 17px;
+    margin: 12px 0 20px;
+}
+
+.quiz-options {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.quiz-options button {
+    background: white;
+    color: var(--primary);
+    border: 2px solid #c7d2fe;
+    min-height: 48px;
+}
+
+.quiz-options button:hover:not(:disabled) {
+    background: var(--primary-light);
+}
+
+#quizResult {
+    margin-top: 18px;
+    padding: 13px;
+    border-radius: 9px;
+}
+
+#quizResult:empty { display: none; }
+
+.feedback-correct {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.feedback-wrong {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.quiz-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+.score {
+    font-weight: bold;
+}
+
+.next-btn {
+    background: var(--primary);
+    color: white;
+}
+
+.secondary-btn {
+    background: white;
+    color: var(--primary);
+    border: 1px solid #c7d2fe;
+}
+
+.quiz-complete {
+    text-align: center;
+    padding: 20px 5px;
+}
+
+.quiz-complete h3 { font-size: 26px; }
+
+footer {
+    text-align: center;
+    padding: 18px 8px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+@media (max-width: 700px) {
+    .container { padding: 14px 10px; }
+    .section { padding: 18px 13px; }
+    .input-grid, .results { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .explanations { grid-template-columns: 1fr; }
+    .quiz-panel { padding: 15px; }
+}
+
+@media (max-width: 380px) {
+    .quiz-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+</style>
 </head>
 
 <body>
+<main class="container">
 
-<div class="container">
+<header class="hero">
+    <span class="tag">INTERACTIVE AI LEARNING</span>
+    <h1>🤖 AI Model Evaluation Lab</h1>
+    <p>Explore how we measure the performance of AI classification models.</p>
+</header>
 
-    <header>
-        <h1>🤖 AI Model Evaluation Lab</h1>
-        <p>Explore how we evaluate the performance of an AI classification model.</p>
-    </header>
+<section class="section" aria-labelledby="matrixHeading">
+    <h2 id="matrixHeading">📊 Confusion Matrix</h2>
+    <p class="subtitle">Compare the model's predictions with the actual results.</p>
 
-
-    <div class="section">
-
-        <h2>📊 Confusion Matrix</h2>
-
-        <div class="matrix">
-
-            <div class="heading"></div>
-            <div class="heading">Actual Positive</div>
-            <div class="heading">Actual Negative</div>
-
-            <div class="heading">Predicted Positive</div>
-            <div class="tp">
-    <strong>TP</strong>
-    <span id="matrixTP">80</span>
-    <small>True Positive</small>
+    <div class="matrix-wrap">
+        <table class="matrix">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Actual Positive</th>
+                    <th>Actual Negative</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th class="row-head">Predicted Positive</th>
+                    <td class="tp-cell">
+                        <strong>TP</strong>
+                        <span id="matrixTP">80</span>
+                        <small>True Positive</small>
+                    </td>
+                    <td class="fp-cell">
+                        <strong>FP</strong>
+                        <span id="matrixFP">10</span>
+                        <small>False Positive</small>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="row-head">Predicted Negative</th>
+                    <td class="fn-cell">
+                        <strong>FN</strong>
+                        <span id="matrixFN">20</span>
+                        <small>False Negative</small>
+                    </td>
+                    <td class="tn-cell">
+                        <strong>TN</strong>
+                        <span id="matrixTN">90</span>
+                        <small>True Negative</small>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-    <div class="fp">
-    <strong>FP</strong>
-    <span id="matrixFP">10</span>
-    <small>False Positive</small>
-    </div>
+</section>
 
-            <div class="heading">Predicted Negative</div>
-        <div class="fn">
-            <strong>FN</strong>
-            <span id="matrixFN">20</span>
-            <small>False Negative</small>
+<section class="section" aria-labelledby="inputHeading">
+    <h2 id="inputHeading">🔢 Enter Model Results</h2>
+    <p class="subtitle">Enter non-negative whole numbers in the four fields.</p>
+
+    <div class="input-grid">
+        <div class="input-box">
+            <label for="tp">True Positive (TP)</label>
+            <small>Correct positive</small>
+            <input type="number" id="tp" min="0" step="1" value="80">
         </div>
-            <div class="tn">
-    <strong>TN</strong>
-    <span id="matrixTN">90</span>
-    <small>True Negative</small>
+        <div class="input-box">
+            <label for="tn">True Negative (TN)</label>
+            <small>Correct negative</small>
+            <input type="number" id="tn" min="0" step="1" value="90">
+        </div>
+        <div class="input-box">
+            <label for="fp">False Positive (FP)</label>
+            <small>False alarm</small>
+            <input type="number" id="fp" min="0" step="1" value="10">
+        </div>
+        <div class="input-box">
+            <label for="fn">False Negative (FN)</label>
+            <small>Missed positive</small>
+            <input type="number" id="fn" min="0" step="1" value="20">
+        </div>
+    </div>
+
+    <p id="inputMessage" class="message" aria-live="polite"></p>
+    <button class="primary-btn" id="calculateBtn" type="button">Calculate Metrics</button>
+</section>
+
+<section class="section" aria-labelledby="resultsHeading">
+    <h2 id="resultsHeading">🎯 Model Performance</h2>
+    <p class="subtitle">The results update when you change the inputs.</p>
+
+    <div class="results" aria-live="polite">
+        <div class="result-card">
+            <h3>Accuracy</h3>
+            <div class="metric-value" id="accuracy">85.00%</div>
+            <div class="metric-label">Overall correctness</div>
+        </div>
+        <div class="result-card">
+            <h3>Precision</h3>
+            <div class="metric-value" id="precision">88.89%</div>
+            <div class="metric-label">Positive predictions correct</div>
+        </div>
+        <div class="result-card">
+            <h3>Recall</h3>
+            <div class="metric-value" id="recall">80.00%</div>
+            <div class="metric-label">Actual positives found</div>
+        </div>
+        <div class="result-card">
+            <h3>F1 Score</h3>
+            <div class="metric-value" id="f1">84.21%</div>
+            <div class="metric-label">Balance of precision and recall</div>
+        </div>
+    </div>
+</section>
+
+<section class="section" aria-labelledby="learnHeading">
+    <h2 id="learnHeading">🧠 Understand the Metrics</h2>
+
+    <div class="explanations">
+        <article class="explanation">
+            <h3>🎯 Accuracy</h3>
+            <p><strong>How often is the AI correct overall?</strong></p>
+            <p>It measures the proportion of all predictions that are correct.</p>
+            <p class="formula">Formula: (TP + TN) / Total</p>
+        </article>
+
+        <article class="explanation">
+            <h3>🎯 Precision</h3>
+            <p><strong>When AI predicts positive, how often is it right?</strong></p>
+            <p>It measures the proportion of predicted positives that are truly positive.</p>
+            <p class="formula">Formula: TP / (TP + FP)</p>
+        </article>
+
+        <article class="explanation">
+            <h3>🔍 Recall</h3>
+            <p><strong>Of all actual positives, how many did AI find?</strong></p>
+            <p>It measures the proportion of actual positive cases correctly detected.</p>
+            <p class="formula">Formula: TP / (TP + FN)</p>
+        </article>
+
+        <article class="explanation">
+            <h3>⚖️ F1 Score</h3>
+            <p><strong>How well does the model balance precision and recall?</strong></p>
+            <p>It is the harmonic mean of precision and recall.</p>
+            <p class="formula">Formula: 2 × Precision × Recall / (Precision + Recall)</p>
+        </article>
+    </div>
+
+    <div class="tip">
+        <strong>💡 Think like an AI evaluator:</strong>
+        If False Positives increase while TP stays the same, Precision decreases.
+        Try changing the values above to observe what happens.
+    </div>
+</section>
+
+<section class="section" aria-labelledby="quizHeading">
+    <h2 id="quizHeading">🕵️ AI Detective Challenge</h2>
+    <p class="subtitle">Read each scenario and identify the correct confusion matrix category.</p>
+
+    <div class="quiz-panel">
+        <div id="quizGame">
+            <div class="quiz-top">
+                <span class="pill" id="questionNumber">Question 1 of 5</span>
+                <span class="pill">AI Detective</span>
             </div>
 
+            <div class="progress-track" aria-label="Quiz progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <h3 id="scenarioTitle">📧 Spam Detector</h3>
+            <p class="scenario" id="scenarioText"></p>
+            <p><strong>What is this prediction?</strong></p>
+
+            <div class="quiz-options" id="quizOptions">
+                <button type="button" data-answer="TP">TP</button>
+                <button type="button" data-answer="TN">TN</button>
+                <button type="button" data-answer="FP">FP</button>
+                <button type="button" data-answer="FN">FN</button>
+            </div>
+
+            <div id="quizResult" role="status" aria-live="polite"></div>
+
+            <div class="quiz-controls">
+                <span class="score">Score: <span id="quizScore">0</span> / 5</span>
+                <button type="button" class="next-btn" id="nextQuestion" disabled>
+                    Next Question →
+                </button>
+            </div>
         </div>
 
-    </div>
-
-
-    <div class="section">
-
-        <h2>🔢 Enter Model Results</h2>
-
-        <div class="inputs">
-
-            <div class="input-box">
-                <label>True Positive</label>
-                <input type="number" id="tp" value="80" min="0">
-            </div>
-
-            <div class="input-box">
-                <label>True Negative</label>
-                <input type="number" id="tn" value="90" min="0">
-            </div>
-
-            <div class="input-box">
-                <label>False Positive</label>
-                <input type="number" id="fp" value="10" min="0">
-            </div>
-
-            <div class="input-box">
-                <label>False Negative</label>
-                <input type="number" id="fn" value="20" min="0">
-            </div>
-
+        <div id="quizComplete" class="quiz-complete" hidden>
+            <h3>🏆 Challenge Complete!</h3>
+            <p id="finalScore"></p>
+            <p id="finalMessage"></p>
+            <button type="button" class="primary-btn" id="playAgain">Play Again</button>
         </div>
-
-        <button class="calculate" onclick="calculateMetrics()">
-            Calculate Metrics
-        </button>
-
     </div>
+</section>
 
-
-    <div class="section">
-
-        <h2>🎯 Model Performance</h2>
-
-        <div class="results">
-
-            <div class="result-card">
-                <h3>Accuracy</h3>
-                <div class="value" id="accuracy">-</div>
-            </div>
-
-            <div class="result-card">
-                <h3>Precision</h3>
-                <div class="value" id="precision">-</div>
-            </div>
-
-            <div class="result-card">
-                <h3>Recall</h3>
-                <div class="value" id="recall">-</div>
-            </div>
-
-            <div class="result-card">
-                <h3>F1 Score</h3>
-                <div class="value" id="f1">-</div>
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="section">
-
-        <h2>🧠 Understand the Metrics</h2>
-
-        <div class="explanations">
-
-            <div class="explanation">
-                <h3>🎯 Accuracy</h3>
-                <p>
-                    <strong>“How often is the AI correct overall?”</strong>
-                </p>
-                <p>
-                    Accuracy measures the proportion of all predictions
-                    that the model classified correctly.
-                </p>
-            </div>
-
-            <div class="explanation">
-                <h3>🎯 Precision</h3>
-                <p>
-                    <strong>“When AI says POSITIVE, how often is it right?”</strong>
-                </p>
-                <p>
-                    Precision tells us how many of the cases predicted
-                    as positive were actually positive.
-                </p>
-            </div>
-
-            <div class="explanation">
-                <h3>🔍 Recall</h3>
-                <p>
-                    <strong>“Of all ACTUAL POSITIVE cases, how many did AI find?”</strong>
-                </p>
-                <p>
-                    Recall measures how many of the actual positive cases
-                    were correctly detected by the model.
-                </p>
-            </div>
-
-            <div class="explanation">
-                <h3>⚖️ F1 Score</h3>
-                <p>
-                    <strong>“How well does the model balance Precision and Recall?”</strong>
-                </p>
-                <p>
-                    F1 Score combines Precision and Recall into a single
-                    measure of model performance.
-                </p>
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="section question">
-
-    <h2>🕵️ AI Detective Challenge</h2>
-
-    <p>
-        An AI system is trained to detect spam emails.
-    </p>
-
-    <div class="explanation">
-
-        <p><strong>📧 Scenario 1</strong></p>
-
-        <p>
-            The email is <strong>actually SPAM</strong>.
-            The AI predicts <strong>SPAM</strong>.
-        </p>
-
-        <p>What is this prediction?</p>
-
-        <button onclick="checkAnswer('TP')">TP</button>
-        <button onclick="checkAnswer('TN')">TN</button>
-        <button onclick="checkAnswer('FP')">FP</button>
-        <button onclick="checkAnswer('FN')">FN</button>
-
-        <p id="quizResult"></p>
-
-    </div>
-
-</div>
-
-
-    <footer>
-        AI Model Evaluation Lab | Educational Project by Marzooka Academic
-    </footer>
-
-</div>
-
+<footer>
+    AI Model Evaluation Lab · Educational project by Marzooka Academic
+</footer>
+</main>
 
 <script>
+"use strict";
 
-function calculateMetrics() {
+/* ---------------- MODEL EVALUATION CALCULATOR ---------------- */
 
-    const TP = Number(document.getElementById("tp").value);
-    const TN = Number(document.getElementById("tn").value);
-    const FP = Number(document.getElementById("fp").value);
-    const FN = Number(document.getElementById("fn").value);
+const inputIds = ["tp", "tn", "fp", "fn"];
 
-    const total = TP + TN + FP + FN;
+function readCounts() {
+    const counts = {};
+
+    for (const id of inputIds) {
+        const input = document.getElementById(id);
+        const raw = input.value.trim();
+        const value = Number(raw);
+
+        if (
+            raw === "" ||
+            !Number.isSafeInteger(value) ||
+            value < 0
+        ) {
+            throw new Error(
+                "Enter a non-negative whole number for every value."
+            );
+        }
+
+        counts[id.toUpperCase()] = value;
+    }
+
+    const total = counts.TP + counts.TN + counts.FP + counts.FN;
+
+    if (!Number.isSafeInteger(total)) {
+        throw new Error("The combined total is too large.");
+    }
 
     if (total === 0) {
-        alert("Please enter at least one value.");
-        return;
+        throw new Error("The total must be greater than zero.");
     }
 
-    const accuracy = (TP + TN) / total;
-
-    const precision =
-        (TP + FP) === 0 ? 0 : TP / (TP + FP);
-
-    const recall =
-        (TP + FN) === 0 ? 0 : TP / (TP + FN);
-
-    const f1 =
-        (precision + recall) === 0
-        ? 0
-        : 2 * (precision * recall) / (precision + recall);
-
-    document.getElementById("matrixTP").textContent = TP;
-    document.getElementById("matrixTN").textContent = TN;
-    document.getElementById("matrixFP").textContent = FP;
-    document.getElementById("matrixFN").textContent = FN;
-    
-    document.getElementById("accuracy").textContent =
-        (accuracy * 100).toFixed(2) + "%";
-
-    document.getElementById("precision").textContent =
-        (precision * 100).toFixed(2) + "%";
-
-    document.getElementById("recall").textContent =
-        (recall * 100).toFixed(2) + "%";
-
-    document.getElementById("f1").textContent =
-        (f1 * 100).toFixed(2) + "%";
+    return { ...counts, total };
 }
 
+function percent(value) {
+    return (value * 100).toFixed(2) + "%";
+}
 
-// Calculate the default values when the page opens
+function calculateMetrics() {
+    const message = document.getElementById("inputMessage");
+
+    try {
+        const { TP, TN, FP, FN, total } = readCounts();
+
+        const accuracy = (TP + TN) / total;
+        const precisionDenominator = TP + FP;
+        const recallDenominator = TP + FN;
+
+        const precision = precisionDenominator === 0
+            ? null
+            : TP / precisionDenominator;
+
+        const recall = recallDenominator === 0
+            ? null
+            : TP / recallDenominator;
+
+        const f1 = precision === null || recall === null ||
+                   precision + recall === 0
+            ? null
+            : 2 * precision * recall / (precision + recall);
+
+        document.getElementById("matrixTP").textContent = TP;
+        document.getElementById("matrixTN").textContent = TN;
+        document.getElementById("matrixFP").textContent = FP;
+        document.getElementById("matrixFN").textContent = FN;
+
+        document.getElementById("accuracy").textContent = percent(accuracy);
+        document.getElementById("precision").textContent =
+            precision === null ? "N/A" : percent(precision);
+        document.getElementById("recall").textContent =
+            recall === null ? "N/A" : percent(recall);
+        document.getElementById("f1").textContent =
+            f1 === null ? "N/A" : percent(f1);
+
+        message.textContent = "";
+        return true;
+    } catch (error) {
+        message.textContent = error.message;
+        return false;
+    }
+}
+
+document.getElementById("calculateBtn").addEventListener("click", calculateMetrics);
+
+for (const id of inputIds) {
+    document.getElementById(id).addEventListener("input", calculateMetrics);
+}
+
 calculateMetrics();
+
+
+/* ---------------- AI DETECTIVE QUIZ ---------------- */
+
+const detectiveQuestions = [
+    {
+        title: "📧 Spam Detector",
+        scenario: "An email is actually spam. The AI predicts that it is spam.",
+        answer: "TP",
+        explanation: "The email is positive (spam), and the AI correctly predicts positive. This is a True Positive."
+    },
+    {
+        title: "✅ Safe Email",
+        scenario: "An email is actually not spam. The AI predicts that it is not spam.",
+        answer: "TN",
+        explanation: "The email is negative (not spam), and the AI correctly predicts negative. This is a True Negative."
+    },
+    {
+        title: "⚠️ False Alarm",
+        scenario: "An email is actually not spam. The AI incorrectly predicts that it is spam.",
+        answer: "FP",
+        explanation: "The actual result is negative, but the AI predicts positive. This is a False Positive."
+    },
+    {
+        title: "🚨 Missed Spam",
+        scenario: "An email is actually spam. The AI predicts that it is not spam.",
+        answer: "FN",
+        explanation: "The actual result is positive, but the AI predicts negative. This is a False Negative."
+    },
+    {
+        title: "🏥 Disease Detection",
+        scenario: "A patient has a disease. The AI correctly predicts that the disease is present.",
+        answer: "TP",
+        explanation: "The disease is actually present, and the AI correctly predicts positive. This is a True Positive."
+    }
+];
+
+let currentQuestion = 0;
+let score = 0;
+let answered = false;
+
+const quizGame = document.getElementById("quizGame");
+const quizComplete = document.getElementById("quizComplete");
+const quizResult = document.getElementById("quizResult");
+const nextButton = document.getElementById("nextQuestion");
+const answerButtons = Array.from(
+    document.querySelectorAll("#quizOptions button")
+);
+
+function showQuizQuestion() {
+    const question = detectiveQuestions[currentQuestion];
+
+    document.getElementById("questionNumber").textContent =
+        `Question ${currentQuestion + 1} of ${detectiveQuestions.length}`;
+
+    document.getElementById("progressBar").style.width =
+        ((currentQuestion + 1) / detectiveQuestions.length * 100) + "%";
+
+    document.getElementById("scenarioTitle").textContent = question.title;
+    document.getElementById("scenarioText").textContent = question.scenario;
+    document.getElementById("quizScore").textContent = score;
+
+    quizResult.textContent = "";
+    quizResult.className = "";
+    nextButton.disabled = true;
+    nextButton.textContent =
+        currentQuestion === detectiveQuestions.length - 1
+            ? "View Final Score"
+            : "Next Question →";
+
+    answerButtons.forEach(button => {
+        button.disabled = false;
+        button.style.background = "white";
+    });
+
+    answered = false;
+}
+
 function checkAnswer(answer) {
+    if (answered) return;
 
-    const result = document.getElementById("quizResult");
+    answered = true;
 
-    if (answer === "TP") {
+    const question = detectiveQuestions[currentQuestion];
+    const correct = answer === question.answer;
 
-        result.innerHTML =
-            "✅ Correct! This is <strong>True Positive (TP)</strong> because the email was actually spam and the AI correctly predicted spam.";
+    if (correct) score++;
 
-        result.style.color = "green";
+    quizResult.textContent =
+        (correct ? "✅ Correct! " : "❌ Not quite. ") +
+        question.explanation;
 
+    quizResult.className = correct
+        ? "feedback-correct"
+        : "feedback-wrong";
+
+    document.getElementById("quizScore").textContent = score;
+
+    answerButtons.forEach(button => {
+        button.disabled = true;
+
+        if (button.dataset.answer === question.answer) {
+            button.style.background = "#dcfce7";
+        }
+    });
+
+    nextButton.disabled = false;
+}
+
+function nextQuizQuestion() {
+    if (!answered) return;
+
+    if (currentQuestion < detectiveQuestions.length - 1) {
+        currentQuestion++;
+        showQuizQuestion();
     } else {
-
-        result.innerHTML =
-            "❌ Not quite. Think about the actual result and the AI prediction again.";
-
-        result.style.color = "red";
+        finishQuiz();
     }
 }
-</script>
 
+function finishQuiz() {
+    quizGame.hidden = true;
+    quizComplete.hidden = false;
+
+    document.getElementById("finalScore").textContent =
+        `Your score: ${score} out of ${detectiveQuestions.length}`;
+
+    let message;
+
+    if (score === 5) {
+        message = "Excellent detective work! You identified every category correctly.";
+    } else if (score >= 3) {
+        message = "Good work! Review the explanations to strengthen your understanding.";
+    } else {
+        message = "Keep practising! Review the four confusion matrix categories and try again.";
+    }
+
+    document.getElementById("finalMessage").textContent = message;
+}
+
+function restartQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    answered = false;
+
+    quizComplete.hidden = true;
+    quizGame.hidden = false;
+
+    showQuizQuestion();
+}
+
+answerButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        checkAnswer(button.dataset.answer);
+    });
+});
+
+nextButton.addEventListener("click", nextQuizQuestion);
+document.getElementById("playAgain").addEventListener("click", restartQuiz);
+
+showQuizQuestion();
+</script>
 </body>
 </html>
